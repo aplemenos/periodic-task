@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  api:
+      build: .
+      container_name: "periodic-task"
+      environment:
+        SERVER_ADDR: "0.0.0.0:8080"
+        RW_TIMEOUT: 15
+        IDLE_TIMEOUT: 15
+        SERVER_TIMEOUT: 15
+      ports:
+        - "8080:8080"
+      restart: always
+      healthcheck:
+        test: "curl --fail http://localhost:8080/alive || exit 1"
+        interval: 30s
+        timeout: 15s
+        retries: 20
