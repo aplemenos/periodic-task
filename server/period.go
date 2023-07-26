@@ -92,6 +92,7 @@ func (h *periodHandler) ptlist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Verify the requested timezone
 	_, err = time.LoadLocation(tz)
 	if err != nil {
 		h.logger.Error(tz+" is invalid timezone")
