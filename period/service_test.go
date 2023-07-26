@@ -18,11 +18,11 @@ func TestService_GetPTList(t *testing.T) {
 	t.Run("SupportedPeriod", func(t *testing.T) {
 		period := "1h"
 		expected := []string{
+			"20210729T000000Z",
 			"20210729T010000Z",
 			"20210729T020000Z",
 			"20210729T030000Z",
 			"20210729T040000Z",
-			"20210729T050000Z",
 		}
 
 		result, err := service.GetPTList(context.Background(), period, t1, t2)
