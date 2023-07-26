@@ -17,7 +17,7 @@ func (odt OneDayTimestamp) GetMatchingTimestamps(t1, t2 time.Time) []string {
 	// Generate the periodic timestamps for one day
 	var ptlist []string
 	for t := t1; t.Before(t2); t = t.AddDate(0, 0, 1) {
-		ptlist = append(ptlist, t.Format("20060102T150405Z"))
+		ptlist = append(ptlist, t.Format(SUPPORTEDFORMAT))
 	}
 	return ptlist
 }

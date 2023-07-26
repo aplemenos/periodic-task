@@ -6,9 +6,11 @@ import "time"
 const (
 	ONEHOUR  = "1h"
 	ONEDAY   = "1d"
-	ONEMONTH = "1m"
+	ONEMONTH = "1mo"
 	ONEYEAR  = "1y"
 )
+
+const SUPPORTEDFORMAT = "20060102T150405Z"
 
 // Timestamp defines the interface of getting the matching timestamps
 // following the rules of the strategy pattern.

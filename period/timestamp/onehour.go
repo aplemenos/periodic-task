@@ -17,7 +17,7 @@ func (oht OneHourTimestamp) GetMatchingTimestamps(t1, t2 time.Time) []string {
 	// Generate the periodic timestamps for one hour
 	var ptlist []string
 	for t := t1; t.Before(t2); t = t.Add(time.Hour) {
-		ptlist = append(ptlist, t.Format("20060102T150405Z"))
+		ptlist = append(ptlist, t.Format(SUPPORTEDFORMAT))
 	}
 	return ptlist
 }

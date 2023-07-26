@@ -4,15 +4,15 @@ services:
       build: .
       container_name: "periodic-task"
       environment:
-        SERVER_ADDR: "0.0.0.0:8080"
+        SERVER_ADDR: "0.0.0.0:8181"
         RW_TIMEOUT: 15
         IDLE_TIMEOUT: 15
         SERVER_TIMEOUT: 15
       ports:
-        - "8080:8080"
+        - "8181:8181"
       restart: always
       healthcheck:
-        test: "curl --fail http://localhost:8080/alive || exit 1"
+        test: "curl --fail http://localhost:8181/alive || exit 1"
         interval: 30s
         timeout: 15s
         retries: 20

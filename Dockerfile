@@ -10,5 +10,6 @@ FROM alpine:latest AS production
 COPY --from=builder /periodictask .
 
 RUN apk --no-cache add curl
+RUN apk add --no-cache tzdata
 
 CMD ["./periodictask"]

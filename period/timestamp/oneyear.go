@@ -17,7 +17,7 @@ func (oyt OneYearTimestamp) GetMatchingTimestamps(t1, t2 time.Time) []string {
 	var ptlist []string
 	for t := t1; t.Before(t2); t = t.AddDate(1, 0, 0) {
 		_t := lastDateOfMonth(t.Year(), t.Month(), t.Hour())
-		ptlist = append(ptlist, _t.Format("20060102T150405Z"))
+		ptlist = append(ptlist, _t.Format(SUPPORTEDFORMAT))
 	}
 	return ptlist
 }

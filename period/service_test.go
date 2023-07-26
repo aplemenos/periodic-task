@@ -52,3 +52,15 @@ func TestService_GetPTList(t *testing.T) {
 		}
 	})
 }
+
+func TestService_Alive(t *testing.T) {
+	logger, _ := zap.NewDevelopment()
+	service := NewService(logger.Sugar())
+
+	ctx := context.Background()
+	err := service.Alive(ctx)
+
+	if err != nil {
+		t.Errorf("Expected no error, but got: %v", err)
+	}
+}

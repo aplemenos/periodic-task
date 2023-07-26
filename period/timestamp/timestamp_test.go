@@ -8,8 +8,8 @@ import (
 )
 
 func TestTimestamp_OneHour(t *testing.T) {
-	t1, _ := time.Parse("20060102T150405Z", "20210714T204603Z")
-	t2, _ := time.Parse("20060102T150405Z", "20210715T123456Z")
+	t1, _ := time.Parse(SUPPORTEDFORMAT, "20210714T204603Z")
+	t2, _ := time.Parse(SUPPORTEDFORMAT, "20210715T123456Z")
 
 	oht := NewTimestamp(ONEHOUR)
 	result := oht.GetMatchingTimestamps(t1, t2)
@@ -45,8 +45,8 @@ func TestTimestamp_OneHour(t *testing.T) {
 }
 
 func TestTimestamp_OneDay(t *testing.T) {
-	t1, _ := time.Parse("20060102T150405Z", "20211010T204603Z")
-	t2, _ := time.Parse("20060102T150405Z", "20211115T123456Z")
+	t1, _ := time.Parse(SUPPORTEDFORMAT, "20211010T204603Z")
+	t2, _ := time.Parse(SUPPORTEDFORMAT, "20211115T123456Z")
 
 	odt := NewTimestamp(ONEDAY)
 	result := odt.GetMatchingTimestamps(t1, t2)
@@ -75,8 +75,8 @@ func TestTimestamp_OneDay(t *testing.T) {
 }
 
 func TestTimestamp_OneMonth(t *testing.T) {
-	t1, _ := time.Parse("20060102T150405Z", "20210214T204603Z")
-	t2, _ := time.Parse("20060102T150405Z", "20211215T123456Z")
+	t1, _ := time.Parse(SUPPORTEDFORMAT, "20210214T204603Z")
+	t2, _ := time.Parse(SUPPORTEDFORMAT, "20211215T123456Z")
 
 	omt := NewTimestamp(ONEMONTH)
 	result := omt.GetMatchingTimestamps(t1, t2)
@@ -106,8 +106,8 @@ func TestTimestamp_OneMonth(t *testing.T) {
 }
 
 func TestTimestamp_OneYear(t *testing.T) {
-	t1, _ := time.Parse("20060102T150405Z", "20180214T204603Z")
-	t2, _ := time.Parse("20060102T150405Z", "20221115T123456Z")
+	t1, _ := time.Parse(SUPPORTEDFORMAT, "20180214T204603Z")
+	t2, _ := time.Parse(SUPPORTEDFORMAT, "20221115T123456Z")
 
 	oyt := NewTimestamp(ONEYEAR)
 	result := oyt.GetMatchingTimestamps(t1, t2)

@@ -15,6 +15,7 @@ var errUnsupportedPeriod = errors.New("unsupported period")
 // Service is the interface that provides period-task methods
 type Service interface {
 	GetPTList(ctx context.Context, period string, t1, t2 time.Time) ([]string, error)
+	Alive(ctx context.Context) error
 }
 
 func (s *service) GetPTList(
@@ -26,10 +27,13 @@ func (s *service) GetPTList(
 		s.logger.Error(period, " is unsupported period")
 		return nil, errUnsupportedPeriod
 	}
-	// Get the matching timestamps
-	ptl := t.GetMatchingTimestamps(t1, t2)
+	// Return the matching timestamps
+	return t.GetMatchingTimestamps(t1, t2), nil
+}
 
-	return ptl, nil
+func (s *service) Alive(ctx context.Context) error {
+	// TODO: Verify the DB aliveness
+	return nil
 }
 
 type service struct {
