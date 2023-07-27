@@ -1,18 +1,17 @@
 # periodic-task
-===============
 A simple microservice which returns the matching timestamps of a periodic task. A periodic task is described by the following properties:
 * Period (every hour, every day, ...)
 * Invocation point (where inside the period should be invoked)
 * Timezone (days/months/years are timezone-depended)
 
 # Project Structure by feature (DDD)
-The periodic-task project follows the Domain-Driven Design (DDD), which it is an approach to software development that focuses on aligning the software design with the business domain, emphasizing the domain model as the central artifact of the system.
+The periodic-task project follows the Domain-Driven Design (DDD), which is an approach to software development that focuses on aligning the software design with the business domain, emphasizing the domain model as the central artifact of the system.
 ## cmd
 This contains the entry point (main.go) files for all the services.
 ## period
-The period is the service and contains the business logic of the application. The period is responsible for calculating the matching timestamps of a periodic task. Also, it contains the timestamp that locates the supported periods (1h, 1d, 1mo, 1y) and they are designed based on the strategy pattern. The strategy pattern is a behavioral software design pattern that enables selecting a period at runtime. It is extensible and easy to support new periods decoupling the details from the period service.
+The period is the service and contains the business logic of the application. The period is responsible for calculating the matching timestamps of a periodic task. Also, it contains the timestamp that locates the supported periods (1h, 1d, 1mo, 1y) and they are designed based on the strategy pattern. The strategy pattern is a behavioural software design pattern that enables selecting a period at runtime. It is extensible and easy to support new periods decoupling the details from the period service.
 ## server
-It is responsible for the transport level, such as request validation, marshalling a request into an object or a struct that a service layer can interact with.
+It is responsible for the transport level, such as request validation, and marshalling a request into an object or a struct that a service layer can interact with.
 ## vendor
 This directory stores all the third-party dependencies locally so that the version doesn’t mismatch late
 
@@ -44,7 +43,7 @@ You can also build and run the application defined in the `docker-compose.yaml` 
 ```
 docker-compose up --build
 ```
-The configuration file supports a healthcheck that it could be used to ping and verify the liveness of a DB repository.
+The configuration file supports a healthcheck that could be used to ping and verify the liveness of a DB repository.
 
 ## Test the application
 To run the unit tests for the periodic-task microservice, execute the following command:
