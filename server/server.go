@@ -101,7 +101,7 @@ func (s *Server) aliveCheck(w http.ResponseWriter, r *http.Request) {
 }
 
 // Serve gracefully serves our newly set up handler function
-func (s *Server) Serve(server *http.Server, stimeout string) error {
+func (s *Server) Serve(server *http.Server, timeout int64) error {
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
 			s.Logger.Error(err)
@@ -109,19 +109,14 @@ func (s *Server) Serve(server *http.Server, stimeout string) error {
 	}()
 
 	// Create a deadline to wait for
-	serverTimeout, err := strconv.ParseInt(stimeout, 10, 0)
-	if err != nil {
-		s.Logger.Error(err)
-		return err
-	}
-	s.Logger.Debug("the server timeout is ", serverTimeout)
+	s.Logger.Debug("the server timeout is ", timeout)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	<-c
 
-	timeout := time.Duration(serverTimeout) * time.Second
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(),
+		time.Duration(timeout)*time.Second)
 	defer cancel()
 
 	// Shut downs gracefully the server

@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	defaultServerAddr    = "0.0.0.0:8080"
+	defaultServerAddr    = "0.0.0.0:8181"
 	defaultRWTimeout     = "15"
 	defaultIdleTimeout   = "15"
 	defaultServerTimeout = "15"
@@ -75,7 +75,14 @@ func Run() error {
 		Handler:      srv,
 	}
 
-	if err := srv.Serve(server, envString("SERVER_TIMEOUT", defaultServerTimeout)); err != nil {
+	timeout, err := strconv.ParseInt(envString("SERVER_TIMEOUT",
+		defaultServerTimeout), 10, 0)
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	if err := srv.Serve(server, timeout); err != nil {
 		log.Error("failed to gracefully serve periodic task")
 		return err
 	}
