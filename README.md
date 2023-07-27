@@ -56,8 +56,8 @@ go test -v ./...
 http://localhost:8181/api/v1/ptlist?period=1y&tz=Europe/Athens&t1=20180214T204603Z&t2=20211115T123456Z
 ```
 
-# Contributing
+## Contributing
 Contributions are welcome! If you have any suggestions, improvements, or bug fixes, please open an issue or submit a pull request.
 
-# Licence
+## Licence
 This code is licensed under the *MIT License*.
