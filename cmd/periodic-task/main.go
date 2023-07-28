@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 	"os"
-	periodichttp "periodic-task/http"
+	periodichttp "periodic-task/internal/http"
 	periodictask "periodic-task/pkg/periodic-task"
 	"strconv"
 	"time"
@@ -21,7 +21,7 @@ const (
 	defaultServerTimeout = "15"
 )
 
-// Run - sets up our application
+// Run sets up our application
 func Run() error {
 	// Build a production logger
 	logger, _ := zap.NewProduction()
