@@ -1,4 +1,4 @@
-package server
+package http
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"periodic-task/period"
+	periodictask "periodic-task/pkg/periodic-task"
 	"strconv"
 	"time"
 
@@ -17,7 +17,7 @@ import (
 
 // Server holds the dependencies for a HTTP server.
 type Server struct {
-	Period period.Service
+	Period periodictask.Service
 
 	Logger *zap.SugaredLogger
 
@@ -25,7 +25,7 @@ type Server struct {
 }
 
 // New returns a new HTTP server.
-func New(ps period.Service, logger *zap.SugaredLogger) *Server {
+func New(ps periodictask.Service, logger *zap.SugaredLogger) *Server {
 	s := &Server{
 		Period: ps,
 		Logger: logger,
@@ -38,8 +38,11 @@ func New(ps period.Service, logger *zap.SugaredLogger) *Server {
 	r.Use(timeoutMiddleware)
 
 	r.Route("/api/v1", func(r chi.Router) {
-		ph := periodHandler{s.Period, s.Logger}
-		r.Mount("/ptlist", ph.router())
+		ph := periodictask.PeriodHandler{
+			S: s.Period,
+			L: s.Logger,
+		}
+		r.Mount("/ptlist", ph.Router())
 	})
 
 	r.Get("/alive", s.aliveCheck)
@@ -91,12 +94,8 @@ type response struct {
 }
 
 func (s *Server) aliveCheck(w http.ResponseWriter, r *http.Request) {
-	if err := s.Period.Alive(r.Context()); err != nil {
-		s.Logger.Error(err.Error())
-		http.Error(w, err.Error(), http.StatusServiceUnavailable)
-		return
-	}
-
+	// It could be used on the future to check the DB or REDIS aliveness
+	// Now, it returns always "I am alive"
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(response{Message: "I am Alive!"}); err != nil {
 		s.Logger.Error(err.Error())
@@ -132,27 +131,4 @@ func (s *Server) Serve(server *http.Server, timeout int64) error {
 
 	s.Logger.Info("shutting down gracefully")
 	return nil
-}
-
-type responseError struct {
-	Status string `json:"status"`
-	Desc   string `json:"desc"`
-}
-
-func httpError(w http.ResponseWriter, status int, desc string) {
-	errorResponse := responseError{
-		Status: "error",
-		Desc:   desc,
-	}
-
-	writeResponse(w, status, errorResponse)
-}
-
-func writeResponse(w http.ResponseWriter, statusCode int, data interface{}) {
-	w.WriteHeader(statusCode)
-
-	if err := json.NewEncoder(w).Encode(data); err != nil {
-		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
-		return
-	}
 }

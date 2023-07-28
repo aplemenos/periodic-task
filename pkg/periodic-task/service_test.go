@@ -1,4 +1,4 @@
-package period
+package periodictask
 
 import (
 	"context"
@@ -51,16 +51,4 @@ func TestService_GetPTList(t *testing.T) {
 			t.Errorf("Expected unsupported period error, but got: %v", err)
 		}
 	})
-}
-
-func TestService_Alive(t *testing.T) {
-	logger, _ := zap.NewDevelopment()
-	service := NewService(logger.Sugar())
-
-	ctx := context.Background()
-	err := service.Alive(ctx)
-
-	if err != nil {
-		t.Errorf("Expected no error, but got: %v", err)
-	}
 }

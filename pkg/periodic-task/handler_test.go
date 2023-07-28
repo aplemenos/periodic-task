@@ -1,4 +1,4 @@
-package server
+package periodictask
 
 import (
 	"bytes"
@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"periodic-task/period/timestamp"
+	"periodic-task/pkg/period"
 	"testing"
 	"time"
 
@@ -40,9 +40,9 @@ func TestPeriodHandler_PTList(t *testing.T) {
 	mockService := new(mockPeriodService)
 
 	// Create the period handler with the mock logger and service
-	ph := &periodHandler{
-		s:      mockService,
-		logger: logger.Sugar(),
+	ph := &PeriodHandler{
+		S: mockService,
+		L: logger.Sugar(),
 	}
 
 	// Create a router and add the handler function
@@ -63,8 +63,8 @@ func TestPeriodHandler_PTList(t *testing.T) {
 	// Test cases
 	t.Run("ValidRequest", func(t *testing.T) {
 		// Set up the mock service expectations and return values
-		t1, _ := time.Parse(timestamp.SUPPORTEDFORMAT, "20210729T000000Z")
-		t2, _ := time.Parse(timestamp.SUPPORTEDFORMAT, "20210729T040000Z")
+		t1, _ := time.Parse(period.SUPPORTEDFORMAT, "20210729T000000Z")
+		t2, _ := time.Parse(period.SUPPORTEDFORMAT, "20210729T040000Z")
 		mockService.On("GetPTList", mock.Anything, "1h", t1, t2).
 			Return([]string{
 				"20210729T000000Z",

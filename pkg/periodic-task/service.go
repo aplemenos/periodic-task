@@ -1,9 +1,9 @@
-package period
+package periodictask
 
 import (
 	"context"
 	"errors"
-	"periodic-task/period/timestamp"
+	"periodic-task/pkg/period"
 	"time"
 
 	"go.uber.org/zap"
@@ -15,34 +15,28 @@ var errUnsupportedPeriod = errors.New("unsupported period")
 // Service is the interface that provides period-task methods
 type Service interface {
 	GetPTList(ctx context.Context, period string, t1, t2 time.Time) ([]string, error)
-	Alive(ctx context.Context) error
 }
 
 func (s *service) GetPTList(
-	ctx context.Context, period string, t1, t2 time.Time,
+	ctx context.Context, p string, t1, t2 time.Time,
 ) ([]string, error) {
-	// Get a timestamp object
-	t := timestamp.NewTimestamp(period)
-	if t == nil {
-		s.logger.Error(period, " is unsupported period")
+	// Get a period object
+	period := period.NewPeriod(p, t1, t2)
+	if period == nil {
+		s.l.Error(p, " is unsupported period")
 		return nil, errUnsupportedPeriod
 	}
 	// Return the matching timestamps
-	return t.GetMatchingTimestamps(t1, t2), nil
-}
-
-func (s *service) Alive(ctx context.Context) error {
-	// TODO: Verify the DB aliveness
-	return nil
+	return period.GetMatchingTimestamps(), nil
 }
 
 type service struct {
-	logger *zap.SugaredLogger
+	l *zap.SugaredLogger
 }
 
 // NewService creates a period service with necessary dependencies
 func NewService(logger *zap.SugaredLogger) Service {
 	return &service{
-		logger: logger,
+		l: logger,
 	}
 }

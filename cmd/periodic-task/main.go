@@ -3,8 +3,8 @@ package main
 import (
 	"net/http"
 	"os"
-	"periodic-task/period"
-	"periodic-task/server"
+	periodichttp "periodic-task/http"
+	periodictask "periodic-task/pkg/periodic-task"
 	"strconv"
 	"time"
 
@@ -36,10 +36,10 @@ func Run() error {
 	fieldKeys := []string{"method"}
 
 	// Setup period service
-	var ps period.Service
-	ps = period.NewService(log)
-	ps = period.NewLoggingService(log, ps)
-	ps = period.NewInstrumentingService(
+	var ps periodictask.Service
+	ps = periodictask.NewService(log)
+	ps = periodictask.NewLoggingService(log, ps)
+	ps = periodictask.NewInstrumentingService(
 		kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
 			Namespace: "api",
 			Subsystem: "period_service",
@@ -54,7 +54,7 @@ func Run() error {
 		}, fieldKeys),
 		ps)
 
-	srv := server.New(ps, log)
+	srv := periodichttp.New(ps, log)
 
 	// Get the timeouts from the enviroment variable
 	rwTimeout, err := strconv.ParseInt(envString("RW_TIMEOUT", defaultRWTimeout), 10, 0)
