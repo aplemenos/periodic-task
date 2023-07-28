@@ -4,14 +4,14 @@ A simple microservice which returns the matching timestamps of a periodic task. 
 * Invocation point (where inside the period should be invoked)
 * Timezone (days/months/years are timezone-depended)
 
-## Project Structure by feature (DDD)
-The periodic-task project follows the Domain-Driven Design (DDD), which is an approach to software development that focuses on aligning the software design with the business domain, emphasizing the domain model as the central artifact of the system.
+## Project Structure by feature
+The periodic-task project follows a common layout for Go application projects.
 ### cmd
 This contains the entry point (main.go) files for all the services.
-### period
-The period is the service and contains the business logic of the application. The period is responsible for calculating the matching timestamps of a periodic task. Also, it contains the timestamp that locates the supported periods (1h, 1d, 1mo, 1y) and they are designed based on the strategy pattern. The strategy pattern is a behavioural software design pattern that enables selecting a period at runtime. It is extensible and easy to support new periods decoupling the details from the period service.
-### server
-It is responsible for the transport level, such as request validation, and marshalling a request into an object or a struct that a service layer can interact with.
+### pkg
+Library code that's ok to use by external applications. This directory stores the `pkg/periodic-task` that contains the service, the business logic of the application, and the handler, the endpoints of service.  In addition to this, it includes the `pkg/period`, that is the process for calculating the matching timestamps of a periodic task through different time intervals, e.g. 1 hour, 1 day, 1 month, and 1 year. It is extensible and easy to support new periods decoupling the details from the main service.
+### internal
+This package holds the private library code used in your service and stores the http server.
 ### vendor
 This directory stores all the third-party dependencies locally so that the version doesn’t mismatch late
 
