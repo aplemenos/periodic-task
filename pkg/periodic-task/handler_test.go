@@ -22,15 +22,10 @@ type mockPeriodService struct {
 }
 
 func (mps *mockPeriodService) GetPTList(
-	ctx context.Context, period string, t1, t2 time.Time,
+	ctx context.Context, period string, t1, t2 time.Time, tz *time.Location,
 ) ([]string, error) {
-	args := mps.Called(ctx, period, t1, t2)
+	args := mps.Called(ctx, period, t1, t2, tz)
 	return args.Get(0).([]string), args.Error(1)
-}
-
-func (mps *mockPeriodService) Alive(ctx context.Context) error {
-	args := mps.Called(ctx)
-	return args.Error(0)
 }
 
 func TestPeriodHandler_PTList(t *testing.T) {
@@ -63,9 +58,10 @@ func TestPeriodHandler_PTList(t *testing.T) {
 	// Test cases
 	t.Run("ValidRequest", func(t *testing.T) {
 		// Set up the mock service expectations and return values
+		tz, _ := time.LoadLocation("Europe/Athens")
 		t1, _ := time.Parse(period.SUPPORTEDFORMAT, "20210729T000000Z")
 		t2, _ := time.Parse(period.SUPPORTEDFORMAT, "20210729T040000Z")
-		mockService.On("GetPTList", mock.Anything, "1h", t1, t2).
+		mockService.On("GetPTList", mock.Anything, "1h", t1, t2, tz).
 			Return([]string{
 				"20210729T000000Z",
 				"20210729T010000Z",
@@ -75,7 +71,7 @@ func TestPeriodHandler_PTList(t *testing.T) {
 
 		// Make a request to the router with valid query parameters
 		resp, err := makeRequest("GET",
-			"/?period=1h&t1=20210729T000000Z&t2=20210729T040000Z&tz=UTC", nil)
+			"/?period=1h&t1=20210729T000000Z&t2=20210729T040000Z&tz=Europe/Athens", nil)
 		assert.NoError(t, err, "Expected no error")
 
 		// Check the response status code

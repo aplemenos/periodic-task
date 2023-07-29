@@ -15,7 +15,7 @@ const SUPPORTEDFORMAT = "20060102T150405Z"
 // Period defines the interface of getting the matching timestamps
 // following the rules of the strategy pattern.
 type Period interface {
-	GetMatchingTimestamps(t1, t2 time.Time) []string
+	GetMatchingTimestamps(t1, t2 time.Time, tz *time.Location) []string
 }
 
 func lastDateOfMonth(t time.Time) time.Time {

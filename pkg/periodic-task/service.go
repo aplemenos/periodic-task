@@ -12,16 +12,15 @@ import (
 // errUnsupportedPeriod is used when the requested period is not supported
 var errUnsupportedPeriod = errors.New("unsupported period")
 
-// errUTCLocation is used when fails to load UTC location
-var errUTCLocation = errors.New("failed to load UTC location")
-
 // Service is the interface that provides period-task methods
 type Service interface {
-	GetPTList(ctx context.Context, period string, t1, t2 time.Time) ([]string, error)
+	GetPTList(
+		ctx context.Context, period string, t1, t2 time.Time, tz *time.Location,
+	) ([]string, error)
 }
 
 func (s *service) GetPTList(
-	ctx context.Context, p string, t1, t2 time.Time,
+	ctx context.Context, p string, t1, t2 time.Time, tz *time.Location,
 ) ([]string, error) {
 	// Get a period object
 	period := period.NewPeriod(p)
@@ -30,7 +29,7 @@ func (s *service) GetPTList(
 		return nil, errUnsupportedPeriod
 	}
 	// Return the matching timestamps
-	return period.GetMatchingTimestamps(t1, t2), nil
+	return period.GetMatchingTimestamps(t1, t2, tz), nil
 }
 
 type service struct {

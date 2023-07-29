@@ -12,10 +12,11 @@ func TestService_GetPTList(t *testing.T) {
 	logger, _ := zap.NewDevelopment()
 	service := NewService(logger.Sugar())
 
+	tz, _ := time.LoadLocation("Europe/Athens")
 	t1, _ := time.Parse("20060102T150405Z", "20210729T000000Z")
 	t2, _ := time.Parse("20060102T150405Z", "20210729T050000Z")
 
-	t.Run("SupportedPeriod", func(t *testing.T) {
+	t.Run("ValidRequest", func(t *testing.T) {
 		period := "1h"
 		expected := []string{
 			"20210729T000000Z",
@@ -25,7 +26,7 @@ func TestService_GetPTList(t *testing.T) {
 			"20210729T040000Z",
 		}
 
-		result, err := service.GetPTList(context.Background(), period, t1, t2)
+		result, err := service.GetPTList(context.Background(), period, t1, t2, tz)
 		if err != nil {
 			t.Fatalf("Expected no error, but got: %v", err)
 		}
@@ -43,7 +44,7 @@ func TestService_GetPTList(t *testing.T) {
 
 	t.Run("UnsupportedPeriod", func(t *testing.T) {
 		period := "invalid"
-		_, err := service.GetPTList(context.Background(), period, t1, t2)
+		_, err := service.GetPTList(context.Background(), period, t1, t2, tz)
 
 		if err == nil {
 			t.Error("Expected error for unsupported period, but got no error")

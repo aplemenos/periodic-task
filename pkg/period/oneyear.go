@@ -7,17 +7,13 @@ import (
 // One Year Period
 type OneYearPeriod struct{}
 
-func (oyp OneYearPeriod) GetMatchingTimestamps(t1, t2 time.Time) []string {
-	// Get the time zone offset of the start time.
-	_, offsetSecs := t1.Zone()
+func (oyp OneYearPeriod) GetMatchingTimestamps(t1, t2 time.Time, tz *time.Location) []string {
+	// Get the time zone offset of the start time based on the requested timezone.
+	_, offsetSecs := t1.In(tz).Zone()
 
 	// Adjust t1 at the end of the year
 	t1 = time.Date(t1.Year()+1, 1, 0, t1.Hour(), t1.Minute(), t1.Second(),
-		0, t1.Location())
-
-	// Load time in UTC
-	utc, _ := time.LoadLocation("UTC")
-	t1 = t1.In(utc)
+		0, time.UTC)
 
 	// Generate the periodic timestamps for one year
 	var ptlist []string
@@ -27,8 +23,12 @@ func (oyp OneYearPeriod) GetMatchingTimestamps(t1, t2 time.Time) []string {
 			break
 		}
 
-		// Add offset of start time (removing the daylight saving time)
-		_t = _t.Add(time.Duration(offsetSecs) * time.Second)
+		// Get the time zone offset of the current time based on the requested timezone.
+		_, newOffsetSecs := _t.In(tz).Zone()
+		if newOffsetSecs != offsetSecs {
+			// Add offset of start time (removing the daylight saving time)
+			_t = _t.Add(time.Duration(offsetSecs-newOffsetSecs) * time.Second)
+		}
 
 		// Round the hour
 		_t = _t.Round(60 * time.Minute)

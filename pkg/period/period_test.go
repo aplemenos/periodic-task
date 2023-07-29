@@ -8,11 +8,12 @@ import (
 )
 
 func TestPeriod_OneHour(t *testing.T) {
+	tz, _ := time.LoadLocation("Europe/Athens")
 	t1, _ := time.Parse(SUPPORTEDFORMAT, "20210714T204603Z")
 	t2, _ := time.Parse(SUPPORTEDFORMAT, "20210715T123456Z")
 
 	p := NewPeriod(ONEHOUR)
-	result := p.GetMatchingTimestamps(t1, t2)
+	result := p.GetMatchingTimestamps(t1, t2, tz)
 
 	expected := []string{
 		"20210714T210000Z",
@@ -46,11 +47,11 @@ func TestPeriod_OneHour(t *testing.T) {
 
 func TestPeriod_OneDay(t *testing.T) {
 	tz, _ := time.LoadLocation("Europe/Athens")
-	t1, _ := time.ParseInLocation(SUPPORTEDFORMAT, "20211010T204603Z", tz)
-	t2, _ := time.ParseInLocation(SUPPORTEDFORMAT, "20211115T123456Z", tz)
+	t1, _ := time.Parse(SUPPORTEDFORMAT, "20211010T204603Z")
+	t2, _ := time.Parse(SUPPORTEDFORMAT, "20211115T123456Z")
 
 	p := NewPeriod(ONEDAY)
-	result := p.GetMatchingTimestamps(t1, t2)
+	result := p.GetMatchingTimestamps(t1, t2, tz)
 
 	expected := []string{
 		"20211010T210000Z", "20211011T210000Z", "20211012T210000Z", "20211013T210000Z",
@@ -77,11 +78,11 @@ func TestPeriod_OneDay(t *testing.T) {
 
 func TestPeriod_OneMonth(t *testing.T) {
 	tz, _ := time.LoadLocation("Europe/Athens")
-	t1, _ := time.ParseInLocation(SUPPORTEDFORMAT, "20210214T214603Z", tz)
-	t2, _ := time.ParseInLocation(SUPPORTEDFORMAT, "20211115T123456Z", tz)
+	t1, _ := time.Parse(SUPPORTEDFORMAT, "20210214T214603Z")
+	t2, _ := time.Parse(SUPPORTEDFORMAT, "20211115T123456Z")
 
 	omp := NewPeriod(ONEMONTH)
-	result := omp.GetMatchingTimestamps(t1, t2)
+	result := omp.GetMatchingTimestamps(t1, t2, tz)
 
 	expected := []string{
 		"20210228T220000Z",
@@ -108,11 +109,11 @@ func TestPeriod_OneMonth(t *testing.T) {
 
 func TestPeriod_OneYear(t *testing.T) {
 	tz, _ := time.LoadLocation("Europe/Athens")
-	t1, _ := time.ParseInLocation(SUPPORTEDFORMAT, "20180214T214603Z", tz)
-	t2, _ := time.ParseInLocation(SUPPORTEDFORMAT, "20211115T123456Z", tz)
+	t1, _ := time.Parse(SUPPORTEDFORMAT, "20180214T214603Z")
+	t2, _ := time.Parse(SUPPORTEDFORMAT, "20211115T123456Z")
 
 	oyp := NewPeriod(ONEYEAR)
-	result := oyp.GetMatchingTimestamps(t1, t2)
+	result := oyp.GetMatchingTimestamps(t1, t2, tz)
 
 	expected := []string{
 		"20181231T220000Z",
