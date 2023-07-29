@@ -9,7 +9,7 @@ The periodic-task project follows a common layout for Go application projects.
 ### cmd
 This contains the entry point (main.go) files for all the services.
 ### pkg
-Library code that's ok to use by external applications. This directory stores the `pkg/periodic-task` that contains the service, the business logic of the application, and the handler, the endpoints of service.  In addition to this, it includes the `pkg/period`, that is the process for calculating the matching timestamps of a periodic task through different time intervals, e.g. 1 hour, 1 day, 1 month, and 1 year. It is desinged by strategy pattern to be extensible and easy to support new periods decoupling the details from the main service.
+Library code that's ok to use by external applications. This directory stores the `pkg/periodic-task` that contains the service, the business logic of the application, and the handler, the endpoints of service.  In addition to this, it includes the `pkg/period`, that is the process for calculating the matching timestamps of a periodic task through different time intervals, e.g. 1 hour, 1 day, 1 month, and 1 year. It is designed to utilise the strategy pattern to be extensible and easy to support new periods of decoupling the details from the service.
 ### internal
 This package holds the private library code used in your service and stores the http server and middlewares.
 ### vendor
