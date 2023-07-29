@@ -75,7 +75,7 @@ func TestPeriodHandler_PTList(t *testing.T) {
 
 		// Make a request to the router with valid query parameters
 		resp, err := makeRequest("GET",
-			"/?period=1h&t1=20210729T000000Z&t2=20210729T040000Z&tz=Europe/Athens", nil)
+			"/?period=1h&t1=20210729T000000Z&t2=20210729T040000Z&tz=UTC", nil)
 		assert.NoError(t, err, "Expected no error")
 
 		// Check the response status code

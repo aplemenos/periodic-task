@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/go-chi/chi"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
 )
 
@@ -36,6 +35,7 @@ func New(ps periodictask.Service, logger *zap.SugaredLogger) *Server {
 	r.Use(accessControl)
 	r.Use(jsonMiddleware)
 	r.Use(timeoutMiddleware)
+	r.Use(s.loggingMiddleware)
 
 	r.Route("/api/v1", func(r chi.Router) {
 		ph := periodictask.PeriodHandler{
@@ -46,7 +46,6 @@ func New(ps periodictask.Service, logger *zap.SugaredLogger) *Server {
 	})
 
 	r.Get("/alive", s.aliveCheck)
-	r.Method("GET", "/metrics", promhttp.Handler())
 
 	s.router = r
 
@@ -71,6 +70,25 @@ func timeoutMiddleware(h http.Handler) http.Handler {
 		ctx, cancel := context.WithTimeout(r.Context(), time.Duration(serverTimeout)*time.Second)
 		defer cancel()
 		h.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+// loggingMiddleware is a handy middleware function that logs out incoming requests
+func (s *Server) loggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+
+		uri := r.RequestURI
+		method := r.Method
+		next.ServeHTTP(w, r) // serve the original request
+
+		duration := time.Since(start)
+
+		// Log request details
+		s.Logger.Infow("logging",
+			zap.String("url", uri),
+			zap.String("method", method),
+			zap.Duration("took", duration))
 	})
 }
 

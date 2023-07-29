@@ -11,8 +11,8 @@ func TestPeriod_OneHour(t *testing.T) {
 	t1, _ := time.Parse(SUPPORTEDFORMAT, "20210714T204603Z")
 	t2, _ := time.Parse(SUPPORTEDFORMAT, "20210715T123456Z")
 
-	p := NewPeriod(ONEHOUR, t1, t2)
-	result := p.GetMatchingTimestamps()
+	p := NewPeriod(ONEHOUR)
+	result := p.GetMatchingTimestamps(t1, t2)
 
 	expected := []string{
 		"20210714T210000Z",
@@ -48,8 +48,8 @@ func TestPeriod_OneDay(t *testing.T) {
 	t1, _ := time.Parse(SUPPORTEDFORMAT, "20211010T204603Z")
 	t2, _ := time.Parse(SUPPORTEDFORMAT, "20211115T123456Z")
 
-	p := NewPeriod(ONEDAY, t1, t2)
-	result := p.GetMatchingTimestamps()
+	p := NewPeriod(ONEDAY)
+	result := p.GetMatchingTimestamps(t1, t2)
 
 	expected := []string{
 		"20211010T210000Z", "20211011T210000Z", "20211012T210000Z", "20211013T210000Z",
@@ -78,8 +78,8 @@ func TestPeriod_OneMonth(t *testing.T) {
 	t1, _ := time.Parse(SUPPORTEDFORMAT, "20210214T204603Z")
 	t2, _ := time.Parse(SUPPORTEDFORMAT, "20211215T123456Z")
 
-	omp := NewPeriod(ONEMONTH, t1, t2)
-	result := omp.GetMatchingTimestamps()
+	omp := NewPeriod(ONEMONTH)
+	result := omp.GetMatchingTimestamps(t1, t2)
 
 	expected := []string{
 		"20210228T210000Z",
@@ -109,8 +109,8 @@ func TestPeriod_OneYear(t *testing.T) {
 	t1, _ := time.Parse(SUPPORTEDFORMAT, "20180214T204603Z")
 	t2, _ := time.Parse(SUPPORTEDFORMAT, "20221115T123456Z")
 
-	oyp := NewPeriod(ONEYEAR, t1, t2)
-	result := oyp.GetMatchingTimestamps()
+	oyp := NewPeriod(ONEYEAR)
+	result := oyp.GetMatchingTimestamps(t1, t2)
 
 	expected := []string{
 		"20181231T210000Z",
@@ -131,9 +131,9 @@ func TestPeriod_OneYear(t *testing.T) {
 }
 
 func TestPeriod_UnsupportedPeriod(t *testing.T) {
-	t1, _ := time.Parse(SUPPORTEDFORMAT, "20180214T204603Z")
-	t2, _ := time.Parse(SUPPORTEDFORMAT, "20221115T123456Z")
+	// t1, _ := time.Parse(SUPPORTEDFORMAT, "20180214T204603Z")
+	// t2, _ := time.Parse(SUPPORTEDFORMAT, "20221115T123456Z")
 
-	owp := NewPeriod("1w", t1, t2)
+	owp := NewPeriod("1w")
 	assert.Nil(t, owp, "Unsupported period")
 }

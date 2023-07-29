@@ -44,6 +44,22 @@ func (h *PeriodHandler) ptlist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get the timezone from url
+	tz := r.URL.Query().Get("tz")
+	if tz == "" {
+		h.L.Error("no timezone found")
+		httpError(w, http.StatusBadRequest, timezoneRequired)
+		return
+	}
+
+	// Verify the requested timezone
+	tzone, err := time.LoadLocation(tz)
+	if err != nil {
+		h.L.Error(tz + " is invalid timezone")
+		httpError(w, http.StatusBadRequest, errInvalidTimezone(tz))
+		return
+	}
+
 	// Get the t1 from url
 	st1 := r.URL.Query().Get("t1")
 	if st1 == "" {
@@ -53,7 +69,7 @@ func (h *PeriodHandler) ptlist(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Convert t1 as time
-	t1, err := time.Parse(period.SUPPORTEDFORMAT, st1)
+	t1, err := time.ParseInLocation(period.SUPPORTEDFORMAT, st1, tzone)
 	if err != nil {
 		h.L.Error("no supported format for " + st1)
 		httpError(w, http.StatusBadRequest, errNoSupportedFormat(st1))
@@ -69,7 +85,7 @@ func (h *PeriodHandler) ptlist(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Convert t2 as time
-	t2, err := time.Parse(period.SUPPORTEDFORMAT, st2)
+	t2, err := time.ParseInLocation(period.SUPPORTEDFORMAT, st2, tzone)
 	if err != nil {
 		h.L.Error("no supported format for " + st2)
 		httpError(w, http.StatusBadRequest, errNoSupportedFormat(st2))
@@ -80,22 +96,6 @@ func (h *PeriodHandler) ptlist(w http.ResponseWriter, r *http.Request) {
 	if t1.After(t2) {
 		h.L.Error("t1 is after t2")
 		httpError(w, http.StatusBadRequest, startAftertEndPoint)
-		return
-	}
-
-	// Get the timezone from url
-	tz := r.URL.Query().Get("tz")
-	if tz == "" {
-		h.L.Error("no timezone found")
-		httpError(w, http.StatusBadRequest, timezoneRequired)
-		return
-	}
-
-	// Verify the requested timezone
-	_, err = time.LoadLocation(tz)
-	if err != nil {
-		h.L.Error(tz + " is invalid timezone")
-		httpError(w, http.StatusBadRequest, errInvalidTimezone(tz))
 		return
 	}
 

@@ -4,12 +4,9 @@ import (
 	"net/http"
 	"os"
 	periodichttp "periodic-task/internal/http"
-	periodictask "periodic-task/pkg/periodic-task"
+	periodicsrv "periodic-task/pkg/periodic-task"
 	"strconv"
 	"time"
-
-	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
-	stdprometheus "github.com/prometheus/client_golang/prometheus"
 
 	"go.uber.org/zap"
 )
@@ -33,26 +30,8 @@ func Run() error {
 
 	log.Info("setting up periodic task")
 
-	fieldKeys := []string{"method"}
-
 	// Setup period service
-	var ps periodictask.Service
-	ps = periodictask.NewService(log)
-	ps = periodictask.NewLoggingService(log, ps)
-	ps = periodictask.NewInstrumentingService(
-		kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
-			Namespace: "api",
-			Subsystem: "period_service",
-			Name:      "request_count",
-			Help:      "Number of requests received.",
-		}, fieldKeys),
-		kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
-			Namespace: "api",
-			Subsystem: "period_service",
-			Name:      "request_latency_microseconds",
-			Help:      "Total duration of requests in microseconds.",
-		}, fieldKeys),
-		ps)
+	ps := periodicsrv.NewService(log)
 
 	srv := periodichttp.New(ps, log)
 
