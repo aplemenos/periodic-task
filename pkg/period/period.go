@@ -2,7 +2,6 @@ package period
 
 import "time"
 
-
 // Constants for all supported periods
 const (
 	ONEHOUR  = "1h"
@@ -19,8 +18,9 @@ type Period interface {
 	GetMatchingTimestamps(t1, t2 time.Time) []string
 }
 
-func lastDateOfMonth(year int, month time.Month, hour int) time.Time {
-	return time.Date(year, month+1, 0, hour, 0, 0, 0, time.UTC)
+func lastDateOfMonth(t time.Time) time.Time {
+	return time.Date(t.Year(), t.Month()+1, 0, t.Hour(), t.Minute(), t.Second(),
+		0, t.Location())
 }
 
 // NewPeriod returns the behavior of the matching timestamps at the runtime
