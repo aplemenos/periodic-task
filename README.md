@@ -6,10 +6,12 @@ A simple microservice which returns the matching timestamps of a periodic task. 
 
 ## Project Structure by feature
 The periodic-task project follows a common layout for Go application projects.
+### api
+It saves the OpenAPI/Swagger specs.
 ### cmd
 This contains the entry point (main.go) files for all the services.
 ### pkg
-Library code that's ok to use by external applications. This directory stores the `pkg/periodic-task` that contains the service, the business logic of the application, and the handler, the endpoints of service.  In addition to this, it includes the `pkg/period`, that is the process for calculating the matching timestamps of a periodic task through different time intervals, e.g. 1 hour, 1 day, 1 month, and 1 year. It is designed to utilise the strategy pattern to be extensible and easy to support new periods of decoupling the details from the service.
+Library code that's ok to use by external applications. This directory stores the `pkg/periodic-task` that contains a) the service, the business logic of the application, and b) the handler, the endpoints of the service. In addition, it includes the `pkg/period`, which keeps the process for calculating the matching timestamps of a periodic task through different time intervals such as one hour, one day, one month, and one year. It is designed to utilise the strategy pattern to be extensible and easy to support new periods and to decouple the details from the service.
 ### internal
 This package holds the private library code used in your service and stores the http server and middlewares.
 ### vendor
@@ -24,7 +26,7 @@ go build -v ./...
 ### Docker
 You can build the Docker image (latest):
 ```
-docker build .
+docker build . --tag periodic-task-api
 ```
 
 ## Running the application
@@ -43,7 +45,7 @@ You can also build and run the application defined in the `docker-compose.yaml` 
 ```
 docker-compose up --build
 ```
-The configuration file supports a healthcheck that could be used to ping and verify the liveness of a DB repository.
+The configuration file supports a healthcheck that could be used to ping and verify the aliveness of a DB repository.
 
 ## Test the application
 To run the unit tests for the periodic-task microservice, execute the following command:

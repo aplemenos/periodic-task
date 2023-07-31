@@ -1,0 +1,72 @@
+openapi: 3.0.0
+info:
+  title: Periodic Task API
+  description: A simple microservice which returns the matching timestamps of a periodic task.
+  version: 0.1.0
+servers:
+  - url: http://localhost:8181/v1
+    description: The default port is 8181, and it can be changed from docker configuration file or cmd-line
+paths:
+  /ptlist:
+    get:
+      summary: Returns the matching timestamps of a periodic task.
+      description: Returns a JSON array with all matching timestamps, in UTC, for the requested period.
+      parameters:
+        - in: query
+          name: period
+          schema:
+            type: string
+          description: The supported periods should be 1h, 1d, 1mo, 1y
+        - in: query
+          name: tz
+          schema:
+            type: string
+          description: Timezone (days/months/years are timezone-depended)
+        - in: query
+          name: t1
+          schema:
+            type: string
+          description: Start point in UTC and in the following form 20060102T150405Z
+        - in: query
+          name: t2
+          schema:
+            type: string
+          description: End point in UTC and in the following form 20060102T150405Z
+      responses:
+        '200':    # status code
+          description: A JSON array of matching timestamps in UTC and in the following form 20060102T150405Z
+          content:
+            application/json:
+              schema: 
+                type: array
+                items: 
+                  type: string
+                  example: 20210228T220000Z
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+# Descriptions of common components
+components:
+  schemas:
+    # Schema for error response body
+    Error:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        desc:
+          type: string
+      required:
+        - status
+        - desc
