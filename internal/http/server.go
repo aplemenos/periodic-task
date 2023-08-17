@@ -32,9 +32,10 @@ func New(ps periodictask.Service, logger *zap.SugaredLogger) *Server {
 
 	r := chi.NewRouter()
 
-	r.Use(accessControl)
-	r.Use(jsonMiddleware)
-	r.Use(timeoutMiddleware)
+	r.Use(s.accessControl)
+	r.Use(s.jsonMiddleware)
+	r.Use(s.timeoutMiddleware)
+	r.Use(s.recovery)
 	r.Use(s.loggingMiddleware)
 
 	r.Route("/api/v1", func(r chi.Router) {
@@ -56,14 +57,14 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.router.ServeHTTP(w, r)
 }
 
-func jsonMiddleware(h http.Handler) http.Handler {
+func (s *Server) jsonMiddleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		h.ServeHTTP(w, r)
 	})
 }
 
-func timeoutMiddleware(h http.Handler) http.Handler {
+func (s *Server) timeoutMiddleware(h http.Handler) http.Handler {
 	timeout := os.Getenv("SERVER_TIMEOUT")
 	serverTimeout, _ := strconv.ParseInt(timeout, 10, 0)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -74,13 +75,13 @@ func timeoutMiddleware(h http.Handler) http.Handler {
 }
 
 // loggingMiddleware is a handy middleware function that logs out incoming requests
-func (s *Server) loggingMiddleware(next http.Handler) http.Handler {
+func (s *Server) loggingMiddleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
 		uri := r.RequestURI
 		method := r.Method
-		next.ServeHTTP(w, r) // serve the original request
+		h.ServeHTTP(w, r) // serve the original request
 
 		duration := time.Since(start)
 
@@ -92,7 +93,29 @@ func (s *Server) loggingMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func accessControl(h http.Handler) http.Handler {
+// recovery is a wrapper which will try to recover from any panic error and report it
+func (s *Server) recovery(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		defer func() {
+			err := recover()
+			if err != nil {
+				s.Logger.Error(err)
+
+				w.WriteHeader(http.StatusInternalServerError)
+
+				json.NewEncoder(w).Encode(map[string]string{
+					"status": "error",
+					"desc":   "There was an internal server error",
+				})
+			}
+		}()
+
+		h.ServeHTTP(w, r)
+	})
+}
+
+func (s *Server) accessControl(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
@@ -116,7 +139,7 @@ func (s *Server) aliveCheck(w http.ResponseWriter, r *http.Request) {
 	// Now, it returns always "I am alive"
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(response{Message: "I am Alive!"}); err != nil {
-		s.Logger.Error(err.Error())
+		s.Logger.Error(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
