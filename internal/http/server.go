@@ -32,10 +32,10 @@ func New(ps periodictask.Service, logger *zap.SugaredLogger) *Server {
 
 	r := chi.NewRouter()
 
+	r.Use(s.recovery)
 	r.Use(s.accessControl)
 	r.Use(s.jsonMiddleware)
 	r.Use(s.timeoutMiddleware)
-	r.Use(s.recovery)
 	r.Use(s.loggingMiddleware)
 
 	r.Route("/api/v1", func(r chi.Router) {
@@ -100,7 +100,7 @@ func (s *Server) recovery(h http.Handler) http.Handler {
 		defer func() {
 			err := recover()
 			if err != nil {
-				s.Logger.Error(err)
+				s.Logger.Error("Failed to recover the panic: ", err)
 
 				w.WriteHeader(http.StatusInternalServerError)
 
@@ -139,7 +139,7 @@ func (s *Server) aliveCheck(w http.ResponseWriter, r *http.Request) {
 	// Now, it returns always "I am alive"
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(response{Message: "I am Alive!"}); err != nil {
-		s.Logger.Error(err)
+		s.Logger.Error("Failed to send Alive: ", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -149,7 +149,7 @@ func (s *Server) aliveCheck(w http.ResponseWriter, r *http.Request) {
 func (s *Server) Serve(server *http.Server, timeout int64) error {
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
-			s.Logger.Error(err)
+			s.Logger.Error("Failed to run the server: ", err)
 		}
 	}()
 
@@ -166,7 +166,7 @@ func (s *Server) Serve(server *http.Server, timeout int64) error {
 
 	// Shut downs gracefully the server
 	if err := server.Shutdown(ctx); err != nil {
-		s.Logger.Error(err)
+		s.Logger.Error("Failed to shut off the server: ", err)
 		return err
 	}
 
